@@ -32,3 +32,9 @@ Thumbs.db
 
 # Local configuration
 CLAUDE.local.md
+
+# Playwright
+.playwright-mcp/
+
+# Test screenshots and images
+*.png
