@@ -5,7 +5,7 @@ const API_URL = '/api';
 let currentSessionId = null;
 
 // DOM elements
-let chatMessages, chatInput, sendButton, totalCourses, courseTitles, newChatButton;
+let chatMessages, chatInput, sendButton, totalCourses, courseTitles, newChatButton, themeToggle;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,8 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
   totalCourses = document.getElementById('totalCourses');
   courseTitles = document.getElementById('courseTitles');
   newChatButton = document.getElementById('newChatButton');
+  themeToggle = document.getElementById('themeToggle');
 
   setupEventListeners();
+  initializeTheme();
   createNewSession();
   loadCourseStats();
 });
@@ -34,6 +36,17 @@ function setupEventListeners() {
   newChatButton.addEventListener('click', () => {
     createNewSession();
     chatInput.focus(); // Focus input after clearing
+  });
+
+  // Theme toggle button
+  themeToggle.addEventListener('click', toggleTheme);
+
+  // Support keyboard navigation (Space/Enter to toggle)
+  themeToggle.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      toggleTheme();
+    }
   });
 
   // Suggested questions
@@ -218,4 +231,82 @@ async function loadCourseStats() {
       courseTitles.innerHTML = '<span class="error">Failed to load courses</span>';
     }
   }
+}
+
+// Theme Management Functions
+function initializeTheme() {
+  // Check for saved theme preference, default to dark
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+
+  // Optional: Check system preference if no saved preference
+  // Commented out to default to dark theme as specified
+  // if (!localStorage.getItem('theme')) {
+  //     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  //     savedTheme = prefersDark ? 'dark' : 'light';
+  // }
+
+  applyTheme(savedTheme, false); // Don't animate on initial load
+}
+
+function toggleTheme() {
+  const currentTheme = getCurrentTheme();
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+  // Apply the theme with animation
+  applyTheme(newTheme, true);
+
+  // Save preference to localStorage
+  localStorage.setItem('theme', newTheme);
+
+  // Dispatch custom event for potential listeners
+  window.dispatchEvent(
+    new CustomEvent('themeChanged', {
+      detail: { theme: newTheme, previousTheme: currentTheme },
+    })
+  );
+}
+
+function getCurrentTheme() {
+  const root = document.documentElement;
+  // Check data-theme attribute first, fall back to class for backwards compatibility
+  return (
+    root.getAttribute('data-theme') ||
+    (root.classList.contains('light-theme') ? 'light' : 'dark')
+  );
+}
+
+function applyTheme(theme, animate = true) {
+  const root = document.documentElement;
+
+  // Add transitioning class if animation is enabled
+  if (animate) {
+    root.classList.add('theme-transitioning');
+  }
+
+  // Apply theme using data-theme attribute (modern approach)
+  root.setAttribute('data-theme', theme);
+
+  // Also maintain class-based approach for backwards compatibility
+  if (theme === 'light') {
+    root.classList.add('light-theme');
+  } else {
+    root.classList.remove('light-theme');
+  }
+
+  // Update aria-label for accessibility
+  if (themeToggle) {
+    const newLabel = theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme';
+    themeToggle.setAttribute('aria-label', newLabel);
+    themeToggle.setAttribute('title', newLabel);
+  }
+
+  // Remove transitioning class after animation
+  if (animate) {
+    setTimeout(() => {
+      root.classList.remove('theme-transitioning');
+    }, 300);
+  }
+
+  // Log theme change for debugging
+  console.log(`Theme switched to: ${theme}`);
 }

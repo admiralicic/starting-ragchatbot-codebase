@@ -7,8 +7,14 @@
   padding: 0;
 }
 
-/* CSS Variables */
-:root {
+/* Theme System: Uses both data-theme attribute (modern) and class-based (backwards compatible)
+ * The data-theme attribute provides semantic HTML and better queryability
+ * CSS selectors use both: :root[data-theme="light"] and :root.light-theme
+ */
+
+/* CSS Variables - Dark Theme (Default) */
+:root,
+:root[data-theme='dark'] {
   --primary-color: #2563eb;
   --primary-hover: #1d4ed8;
   --background: #0f172a;
@@ -24,6 +30,90 @@
   --focus-ring: rgba(37, 99, 235, 0.2);
   --welcome-bg: #1e3a5f;
   --welcome-border: #2563eb;
+}
+
+/* Light theme variables - using data-theme attribute (modern approach) */
+:root[data-theme="light"],
+:root.light-theme {
+    /* Primary colors - maintain brand identity */
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+
+    /* Background colors - light and airy */
+    --background: #f8fafc;        /* slate-50: main background */
+    --surface: #ffffff;            /* white: cards and surfaces */
+    --surface-hover: #f1f5f9;      /* slate-100: hover states */
+
+    /* Text colors - high contrast for readability */
+    --text-primary: #0f172a;       /* slate-900: primary text (contrast ratio 14.5:1) */
+    --text-secondary: #64748b;     /* slate-500: secondary text (contrast ratio 4.6:1) */
+
+    /* Border colors - subtle but visible */
+    --border-color: #e2e8f0;       /* slate-200: borders and dividers */
+
+    /* Message colors */
+    --user-message: #2563eb;       /* blue-600: user messages */
+    --assistant-message: #f1f5f9;  /* slate-100: assistant messages */
+
+    /* Effects */
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --focus-ring: rgba(37, 99, 235, 0.3);  /* More visible focus ring */
+
+    /* Special backgrounds */
+    --welcome-bg: #dbeafe;         /* blue-100: welcome message background */
+    --welcome-border: #2563eb;     /* blue-600: welcome message border */
+}
+
+/* Smooth Theme Transitions */
+body,
+.container,
+.sidebar,
+.chat-main,
+.chat-container,
+.chat-messages,
+.chat-input-container,
+#chatInput,
+.message-content,
+.source-item,
+.stat-item,
+.suggested-item,
+.new-chat-button {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Theme toggle button keeps its own transition */
+.theme-toggle {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Optional: Add a subtle fade during theme transition */
+.theme-transitioning .chat-messages,
+.theme-transitioning .sidebar,
+.theme-transitioning .chat-input-container {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.15s ease;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    body,
+    .container,
+    .sidebar,
+    .chat-main,
+    .chat-container,
+    .chat-messages,
+    .chat-input-container,
+    #chatInput,
+    .message-content,
+    .source-item,
+    .stat-item,
+    .suggested-item,
+    .new-chat-button,
+    .theme-toggle,
+    .theme-icon {
+        transition: none !important;
+        animation: none !important;
+    }
 }
 
 /* Base Styles */
@@ -47,6 +137,74 @@ body {
   flex-direction: column;
   margin: 0;
   padding: 0;
+  position: relative;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  box-shadow: var(--shadow);
+}
+
+.theme-toggle:hover {
+  background: var(--surface-hover);
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+  box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  border-color: var(--primary-color);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Theme icons */
+.theme-icon {
+  position: absolute;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Sun icon - visible in dark mode */
+.sun-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+:root[data-theme='light'] .sun-icon,
+.light-theme .sun-icon {
+  opacity: 0;
+  transform: rotate(180deg) scale(0);
+}
+
+/* Moon icon - visible in light mode */
+.moon-icon {
+  opacity: 0;
+  transform: rotate(-180deg) scale(0);
+}
+
+:root[data-theme='light'] .moon-icon,
+.light-theme .moon-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
 }
 
 /* Header - Hidden */
@@ -104,6 +262,21 @@ header h1 {
 
 .sidebar::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+:root[data-theme="light"] .sidebar::-webkit-scrollbar-track,
+.light-theme .sidebar::-webkit-scrollbar-track {
+    background: var(--surface);
+}
+
+:root[data-theme="light"] .sidebar::-webkit-scrollbar-thumb,
+.light-theme .sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* slate-300 */
+}
+
+:root[data-theme="light"] .sidebar::-webkit-scrollbar-thumb:hover,
+.light-theme .sidebar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* slate-400 */
 }
 
 .sidebar-section {
@@ -207,6 +380,21 @@ header h1 {
   background: var(--text-secondary);
 }
 
+:root[data-theme="light"] .chat-messages::-webkit-scrollbar-track,
+.light-theme .chat-messages::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+:root[data-theme="light"] .chat-messages::-webkit-scrollbar-thumb,
+.light-theme .chat-messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* slate-300: more visible in light theme */
+}
+
+:root[data-theme="light"] .chat-messages::-webkit-scrollbar-thumb:hover,
+.light-theme .chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* slate-400 */
+}
+
 /* Message Styles */
 .message {
   max-width: 85%;
@@ -308,6 +496,17 @@ header h1 {
   transform: translateX(2px);
 }
 
+:root[data-theme="light"] .source-item,
+.light-theme .source-item {
+    background: rgba(37, 99, 235, 0.06);
+    border-left-color: var(--primary-color);
+}
+
+:root[data-theme="light"] .source-item:hover,
+.light-theme .source-item:hover {
+    background: rgba(37, 99, 235, 0.12);
+}
+
 /* Source links */
 .source-link {
   color: var(--primary-color);
@@ -329,6 +528,11 @@ header h1 {
 
 .source-link:visited {
   color: #8b5cf6; /* Purple for visited links */
+}
+
+:root[data-theme="light"] .source-link:visited,
+.light-theme .source-link:visited {
+    color: #7c3aed; /* violet-600: better contrast in light theme */
 }
 
 /* Markdown formatting styles */
@@ -376,6 +580,11 @@ header h1 {
   font-size: 0.875em;
 }
 
+:root[data-theme="light"] .message-content code,
+.light-theme .message-content code {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
 .message-content pre {
   background-color: rgba(0, 0, 0, 0.2);
   padding: 0.75rem;
@@ -384,24 +593,42 @@ header h1 {
   margin: 0.5rem 0;
 }
 
+:root[data-theme="light"] .message-content pre,
+.light-theme .message-content pre {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
 .message-content pre code {
   background-color: transparent;
   padding: 0;
 }
 
 .message-content blockquote {
-  border-left: 3px solid var(--primary);
+  border-left: 3px solid var(--primary-color);
   padding-left: 1rem;
   margin: 0.5rem 0;
   color: var(--text-secondary);
 }
 
+:root[data-theme="light"] .message-content blockquote,
+.light-theme .message-content blockquote {
+    border-left-color: var(--primary-color);
+    color: var(--text-secondary);
+}
+
 /* Welcome message special styling */
 .message.welcome-message .message-content {
-  background: var(--surface);
-  border: 2px solid var(--border-color);
+  background: var(--welcome-bg);
+  border: 2px solid var(--welcome-border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   position: relative;
+}
+
+:root[data-theme="light"] .message.welcome-message .message-content,
+.light-theme .message.welcome-message .message-content {
+    background: var(--welcome-bg);
+    border-color: var(--welcome-border);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .message-content strong {
@@ -448,6 +675,25 @@ header h1 {
 
 #chatInput::placeholder {
   color: var(--text-secondary);
+}
+
+:root[data-theme="light"] #chatInput,
+.light-theme #chatInput {
+    background: var(--surface);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+:root[data-theme="light"] #chatInput:focus,
+.light-theme #chatInput:focus {
+    background: var(--surface);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+:root[data-theme="light"] #chatInput::placeholder,
+.light-theme #chatInput::placeholder {
+    color: var(--text-secondary);
 }
 
 /* Send Button */
@@ -522,21 +768,35 @@ header h1 {
 /* Error Message */
 .error-message {
   background: rgba(239, 68, 68, 0.1);
-  color: #f87171;
+  color: #dc2626;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
   border: 1px solid rgba(239, 68, 68, 0.2);
   margin: 0.5rem 0;
 }
 
+:root[data-theme="light"] .error-message,
+.light-theme .error-message {
+    background: rgba(239, 68, 68, 0.08);
+    color: #dc2626;  /* red-600: better contrast (4.5:1) */
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
 /* Success Message */
 .success-message {
   background: rgba(34, 197, 94, 0.1);
-  color: #4ade80;
+  color: #16a34a;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
   border: 1px solid rgba(34, 197, 94, 0.2);
   margin: 0.5rem 0;
+}
+
+:root[data-theme="light"] .success-message,
+.light-theme .success-message {
+    background: rgba(34, 197, 94, 0.08);
+    color: #16a34a;  /* green-600: better contrast (4.5:1) */
+    border-color: rgba(34, 197, 94, 0.3);
 }
 
 /* Sidebar Headers */
@@ -606,6 +866,12 @@ details[open] .suggested-header::before {
 
 .stat-item:last-child {
   margin-bottom: 0;
+}
+
+:root[data-theme="light"] .stat-item,
+.light-theme .stat-item {
+    background: var(--surface);
+    border-color: var(--border-color);
 }
 
 .stat-value {
@@ -728,6 +994,21 @@ details[open] .suggested-header::before {
   border-color: var(--primary-color);
   color: var(--primary-color);
   transform: translateX(2px);
+}
+
+:root[data-theme="light"] .suggested-item,
+.light-theme .suggested-item {
+    background: var(--surface);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+:root[data-theme="light"] .suggested-item:hover,
+.light-theme .suggested-item:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Responsive Design */

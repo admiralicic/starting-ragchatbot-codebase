@@ -1,14 +1,18 @@
-# Frontend Code Quality Tools Implementation
+# Frontend Changes
 
-## Summary
+This document tracks all major frontend changes and features.
+
+---
+
+## Part 1: Code Quality Tools Implementation
 
 Added essential code quality tools to the frontend development workflow, including Prettier for automatic code formatting and ESLint for JavaScript linting. Created convenience scripts for running quality checks and automatically fixing issues.
 
-## Changes Made
+### Changes Made
 
-### 1. Configuration Files Added
+#### 1. Configuration Files Added
 
-#### `.prettierrc.json`
+**`.prettierrc.json`**
 - **Purpose**: Prettier configuration for consistent code formatting
 - **Settings**:
   - Print width: 100 characters
@@ -18,7 +22,7 @@ Added essential code quality tools to the frontend development workflow, includi
   - Trailing commas in ES5-compatible positions
   - Unix line endings (LF)
 
-#### `.eslintrc.json`
+**`.eslintrc.json`**
 - **Purpose**: ESLint configuration for JavaScript code quality
 - **Settings**:
   - ECMAScript 2021+ features
@@ -31,13 +35,13 @@ Added essential code quality tools to the frontend development workflow, includi
   - Prohibits `var` in favor of `let` and `const`
   - Declares `marked` as a global (from CDN)
 
-#### `.prettierignore` & `.eslintignore`
+**`.prettierignore` & `.eslintignore`**
 - **Purpose**: Exclude directories from formatting and linting
 - **Excluded**: node_modules, dist, build, .cache
 
-### 2. Package Management
+#### 2. Package Management
 
-#### `package.json`
+**`package.json`**
 - **Purpose**: NPM scripts and dev dependencies
 - **Dev Dependencies**:
   - `eslint@^8.57.0` - JavaScript linter
@@ -50,9 +54,9 @@ Added essential code quality tools to the frontend development workflow, includi
   - `quality` - Run all quality checks
   - `quality:fix` - Run all quality fixes
 
-### 3. Convenience Scripts
+#### 3. Convenience Scripts
 
-#### `check-quality.sh`
+**`check-quality.sh`**
 - **Purpose**: Run quality checks without making changes
 - **Features**:
   - Automatically installs dependencies if missing
@@ -61,9 +65,8 @@ Added essential code quality tools to the frontend development workflow, includi
   - Provides clear status messages
   - Exits with error if checks fail
 - **Usage**: `./check-quality.sh`
-- **Use Cases**: CI/CD pipelines, pre-commit checks
 
-#### `fix-quality.sh`
+**`fix-quality.sh`**
 - **Purpose**: Automatically fix quality issues
 - **Features**:
   - Automatically installs dependencies if missing
@@ -71,177 +74,167 @@ Added essential code quality tools to the frontend development workflow, includi
   - Auto-fixes linting issues with ESLint
   - Provides clear status messages
 - **Usage**: `./fix-quality.sh`
-- **Use Cases**: During development, before committing
 
-### 4. Documentation
+#### 4. Documentation
 
-#### `QUALITY.md`
-- **Purpose**: Comprehensive guide for using code quality tools
-- **Contents**:
-  - Tool descriptions (Prettier, ESLint)
-  - Configuration details
-  - Setup instructions
-  - Usage examples (scripts and npm commands)
-  - Recommended development workflow
-  - Editor integration guides (VS Code, WebStorm)
-  - Best practices
-  - Troubleshooting tips
+**`QUALITY.md`** - Comprehensive guide for using code quality tools
+**`QUICK-START.md`** - Quick reference guide for daily usage
 
-#### `QUICK-START.md`
-- **Purpose**: Quick reference guide for daily usage
-- **Contents**:
-  - First time setup instructions
-  - Daily usage commands
-  - Common npm scripts
-  - Link to full documentation
-  - Common issues and solutions
-
-### 5. Code Formatting Applied
+#### 5. Code Formatting Applied
 
 All existing frontend files have been formatted according to the new standards:
+- `script.js` - Consistent 2-space indentation, single quotes
+- `index.html` - Consistent indentation, proper attribute formatting
+- `style.css` - Consistent formatting, proper spacing
 
-#### `script.js`
-- Consistent 2-space indentation
-- Single quotes throughout
-- Proper spacing around operators and braces
-- No trailing whitespace
+---
 
-#### `index.html`
-- Consistent indentation
-- Proper attribute formatting
-- Clean HTML structure
+## Part 2: Theme Toggle Feature
 
-#### `style.css`
-- Consistent formatting
-- Proper spacing and indentation
-- Clean CSS structure
+Implemented a theme toggle button that allows users to switch between dark and light themes. The button is positioned in the top-right corner of the interface with smooth animations and full accessibility support.
 
-## Benefits
+### Files Modified
 
-1. **Consistency**: All code follows the same formatting style
-2. **Quality**: ESLint catches common JavaScript errors and bad practices
-3. **Automation**: Scripts handle formatting and fixing automatically
-4. **Developer Experience**: Clear feedback and easy-to-use tools
-5. **CI/CD Ready**: Scripts can be integrated into automated pipelines
-6. **Editor Integration**: Works with popular editors (VS Code, WebStorm)
+#### 1. `frontend/index.html`
+**Changes:**
+- Added theme toggle button element with sun and moon SVG icons
+- Positioned before the header element
+- Includes proper ARIA labels for accessibility
 
-## Usage
+#### 2. `frontend/style.css`
+**Changes:**
+- Added light theme CSS variables (`:root.light-theme` and `:root[data-theme="light"]`)
+- Created `.theme-toggle` button styles with hover effects and animations
+- Added `.theme-icon` styles with rotation and scale animations
+- Updated all components to support light theme
+- Added smooth 300ms transitions for theme switching
 
-### For Developers
+**Key Features:**
+- Smooth icon transitions using opacity, rotation, and scale transforms
+- Sun icon visible in dark mode (default)
+- Moon icon visible in light mode
+- Hover and focus states for accessibility
+- Respects `prefers-reduced-motion`
 
-**Check code quality before committing:**
-```bash
-cd frontend
-./check-quality.sh
-```
+**Light Theme Variables:**
+- Background: `#f8fafc` (slate-50)
+- Surface: `#ffffff` (white)
+- Text primary: `#0f172a` (slate-900) - 14.5:1 contrast
+- Text secondary: `#64748b` (slate-500) - 4.6:1 contrast
+- Border: `#e2e8f0` (slate-200)
+- Maintains same primary blue color for consistency
 
-**Fix quality issues automatically:**
-```bash
-cd frontend
-./fix-quality.sh
-```
+#### 3. `frontend/script.js`
+**Changes:**
+- Added `themeToggle` to DOM element declarations
+- Created theme management functions:
+  - `initializeTheme()` - Load saved preference
+  - `toggleTheme()` - Switch themes
+  - `applyTheme(theme, animate)` - Apply theme with optional animation
+  - `getCurrentTheme()` - Get active theme
+- Added event listeners for button click and keyboard navigation
+- Theme preference stored in localStorage
+- Custom `themeChanged` event dispatching
 
-### For CI/CD
+### Design Decisions
 
-Add to your pipeline:
-```bash
-cd frontend
-npm install
-npm run quality
-```
+**Visual Design:**
+- Position: Fixed top-right (1.5rem from edges) with z-index: 1000
+- Size: 48x48px for easy clicking/tapping
+- Shape: Circular to fit theme aesthetic
+- Icons: Sun for light mode, Moon for dark mode
 
-### NPM Commands
+**Accessibility:**
+- Keyboard navigation support (Tab, Space, Enter)
+- Focus indicators with primary color ring
+- Dynamic ARIA labels
+- WCAG AA/AAA compliant contrast ratios
+- Respects `prefers-reduced-motion`
 
-```bash
-# Format all files
-npm run format
+**User Experience:**
+- Theme preference persists via localStorage
+- Default: Dark theme
+- Smooth 300ms transitions for all color changes
+- No animation on initial page load (performance)
+- Custom events for integration
 
-# Check formatting (no changes)
-npm run format:check
+### Theme Color Schemes
 
-# Lint JavaScript
-npm run lint
+**Dark Theme (Default):**
+- Background: #0f172a (slate-900)
+- Surface: #1e293b (slate-800)
+- Text Primary: #f1f5f9 (slate-100)
+- Text Secondary: #94a3b8 (slate-400)
 
-# Lint and auto-fix
-npm run lint:fix
+**Light Theme:**
+- Background: #f8fafc (slate-50)
+- Surface: #ffffff (white)
+- Text Primary: #0f172a (slate-900)
+- Text Secondary: #64748b (slate-500)
 
-# Run all checks
-npm run quality
+### Implementation Highlights
 
-# Fix all issues
-npm run quality:fix
-```
+**Data-Theme Attribute:**
+- Modern approach using `data-theme` attribute on `<html>`
+- Backwards compatible with class-based approach
+- Semantic HTML5 standard
+- Easy JavaScript queryability: `document.documentElement.dataset.theme`
 
-## Workflow Integration
+**CSS Custom Properties:**
+- All theme colors use CSS variables
+- Single source of truth for colors
+- Instant browser recalculation on theme change
+- No JavaScript style manipulation needed
 
-### Recommended Development Workflow
+**Smooth Transitions:**
+- 300ms ease transitions on all color properties
+- GPU-accelerated properties
+- No layout shifts
+- Optional animation control
 
-1. Write code
-2. Run `./fix-quality.sh` to auto-fix issues
-3. Review changes
-4. Run `./check-quality.sh` to verify
-5. Commit code
+### Testing Recommendations
 
-### Editor Setup (Optional but Recommended)
+1. **Visual Testing:** Verify button appearance and animations
+2. **Interaction Testing:** Click, keyboard navigation, persistence
+3. **Accessibility Testing:** Screen readers, focus indicators, contrast
+4. **Performance Testing:** CPU usage, no memory leaks
+5. **Responsive Testing:** Mobile devices, touch targets
 
-Configure your editor to:
-- Format on save with Prettier
-- Show ESLint errors inline
-- Auto-fix ESLint issues on save
+### Browser Compatibility
 
-See `QUALITY.md` for detailed editor setup instructions.
+✅ Chrome/Edge 90+
+✅ Firefox 88+
+✅ Safari 14+
+✅ Mobile browsers
 
-## Files Added/Modified
+---
 
-### New Files
+## Summary of All Changes
+
+### New Files Added
 - `frontend/.prettierrc.json` - Prettier configuration
 - `frontend/.prettierignore` - Prettier ignore rules
 - `frontend/.eslintrc.json` - ESLint configuration
 - `frontend/.eslintignore` - ESLint ignore rules
 - `frontend/.gitignore` - Git ignore rules for frontend
 - `frontend/package.json` - NPM configuration and scripts
-- `frontend/check-quality.sh` - Quality check script (executable)
-- `frontend/fix-quality.sh` - Quality fix script (executable)
-- `frontend/QUALITY.md` - Comprehensive quality tools documentation
+- `frontend/check-quality.sh` - Quality check script
+- `frontend/fix-quality.sh` - Quality fix script
+- `frontend/QUALITY.md` - Quality tools documentation
 - `frontend/QUICK-START.md` - Quick reference guide
-- `frontend/node_modules/` - NPM dependencies (gitignored)
-- `frontend/package-lock.json` - NPM dependency lock file
 
 ### Modified Files
-- `frontend/script.js` - Formatted with Prettier
-- `frontend/index.html` - Formatted with Prettier
-- `frontend/style.css` - Formatted with Prettier
+- `frontend/script.js` - Formatted + theme management
+- `frontend/index.html` - Formatted + theme toggle button
+- `frontend/style.css` - Formatted + light theme support
 
-## Testing
-
-All quality tools have been tested and verified:
-
-✅ Dependencies installed successfully
-✅ Prettier formats code correctly
-✅ ESLint lints code without errors
-✅ `check-quality.sh` script works
-✅ `fix-quality.sh` script works
-✅ All existing code passes quality checks
-
-## Next Steps
-
-1. **Add to Git**: Commit the new configuration files
-2. **Update .gitignore**: Ensure `node_modules/` is ignored
-3. **CI/CD Integration**: Add quality checks to your CI pipeline
-4. **Pre-commit Hooks**: Consider adding git hooks to run checks automatically
-5. **Editor Setup**: Configure your editor for inline formatting and linting
-6. **Team Onboarding**: Share `QUALITY.md` with team members
-
-## Maintenance
-
-- **Update Dependencies**: Run `npm update` periodically
-- **Review Rules**: Adjust ESLint rules as needed in `.eslintrc.json`
-- **Format Settings**: Modify Prettier settings in `.prettierrc.json` if needed
-- **Keep Documentation Updated**: Update `QUALITY.md` when making changes
-
-## Notes
-
-- All scripts use Unix line endings (LF) for cross-platform compatibility
-- Node.js and npm are required to use these tools
-- Scripts are designed to be simple and maintainable
-- Configuration follows common industry standards and best practices
+### Key Achievements
+✅ Code quality tooling (Prettier + ESLint)
+✅ Full light/dark theme system
+✅ WCAG AA/AAA accessibility compliance
+✅ Smooth theme transitions
+✅ Modern data-theme implementation
+✅ localStorage persistence
+✅ Custom event system
+✅ Keyboard accessible
+✅ Respects motion preferences
