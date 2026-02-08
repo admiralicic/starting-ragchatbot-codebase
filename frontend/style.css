@@ -111,6 +111,48 @@ header h1 {
     margin-bottom: 0;
 }
 
+/* New Chat Button */
+.new-chat-container {
+    margin-bottom: 1.5rem;
+}
+
+.new-chat-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    text-align: left;
+}
+
+.new-chat-button:hover {
+    color: var(--primary-color);
+}
+
+.new-chat-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+    border-color: var(--primary-color);
+}
+
+.new-chat-button:active {
+    transform: translateX(0);
+}
+
+.new-chat-icon {
+    flex-shrink: 0;
+    color: inherit;
+}
+
 /* Main Chat Area */
 .chat-main {
     flex: 1;
@@ -241,8 +283,49 @@ header h1 {
 }
 
 .sources-content {
-    padding: 0 0.5rem 0.25rem 1.5rem;
+    padding: 0.5rem 0.5rem 0.25rem 0.5rem;
     color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Individual source item container */
+.source-item {
+    padding: 0.5rem 0.75rem;
+    background: rgba(37, 99, 235, 0.08);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.source-item:hover {
+    background: rgba(37, 99, 235, 0.15);
+    transform: translateX(2px);
+}
+
+/* Source links */
+.source-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.source-link:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+.source-link:focus {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.source-link:visited {
+    color: #8b5cf6; /* Purple for visited links */
 }
 
 /* Markdown formatting styles */
