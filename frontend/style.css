@@ -207,9 +207,12 @@ body {
   transform: rotate(0deg) scale(1);
 }
 
-/* Header - Hidden */
+/* Header */
 header {
-  display: none;
+  padding: 1.5rem 2rem;
+  background: var(--background);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 header h1 {
